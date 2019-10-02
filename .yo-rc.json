@@ -1,0 +1,12 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "version": "1.9.1",
+    "libraryName": "org-chart",
+    "libraryId": "9bf2b53d-2cb4-46c2-99cc-f62d6462a80d",
+    "environment": "spo",
+    "isDomainIsolated": false,
+    "isCreatingSolution": true,
+    "packageManager": "npm",
+    "componentType": "webpart"
+  }
+}

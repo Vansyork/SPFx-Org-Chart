@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+        <Field Name="LinkTitle" ID="{82642ec8-ef9b-478f-acf9-31f7d45fbc31}" DisplayName="Name" Required="TRUE" Sealed="TRUE" Type="Calculated"/>
+        <Field Name="LinkTitleNoMenu" ID="{bc91a437-52e7-49e1-8c4e-4698904b2b6d}" DisplayName="Name" Required="TRUE" Sealed="TRUE" Type="Calculated"/>
+        <Field Name="Title" ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}" DisplayName="Name" Sealed="TRUE" Required="TRUE" Type="Text"/>
+
+        <Field  ID="{9390D837-3F84-4302-B615-B204B998B9D6}" 
+                Type="Text" 
+                DisplayName="Department"
+                Required="TRUE" 
+                EnforceUniqueValues="FALSE" 
+                Indexed="FALSE" 
+                MaxLength="255" 
+                StaticName="Department" 
+                Name="ORG_Department" 
+                Group="ORG Columns" />
+                
+        <Field  ID="{7537821E-1071-411D-B368-A05F8F748568}" 
+                Type="Note"
+                DisplayName="Description"
+                EnforceUniqueValues="FALSE"
+                Indexed="FALSE"
+                NumLines="6"
+                RichText="FALSE"
+                Sortable="FALSE"
+                StaticName="Description"
+                Name="ORG_Description"
+                Required="FALSE"
+                Group="ORG Columns" />
+            
+        <Field  ID="{2498EF03-A11D-41BC-B91C-FFF4F6EF9BCE}"
+                DisplayName="Picture"
+                Format="Image"
+                Title="Picture"
+                Type="URL"
+                StaticName="Picture"
+                Name="ORG_Picture"
+                Required="FALSE"
+                Group="ORG Columns" />   
+
+        <Field Type="LookupMulti"
+                DisplayName="My Reportees"
+                Required="FALSE"
+                List="Lists/Orgconfig"
+                EnforceUniqueValues="FALSE"
+                ShowField="Title"
+                Mult="TRUE"
+                Sortable="FALSE"
+                UnlimitedLengthInDocumentLibrary="FALSE"
+                RelationshipDeleteBehavior="None"
+                ID="{F84FC9D9-6307-44BA-84C5-C029C0D19BE8}"
+                StaticName="ORG_MyReportees"
+                Name="ORG_MyReportees"
+                Group="ORG Columns" />
+
+        <Field Type="LookupMulti"
+                DisplayName="My Reportees:ID"
+                ShowField="ID"
+                FieldRef="F84FC9D9-6307-44BA-84C5-C029C0D19BE8"
+                List="Lists/Orgconfig"
+                ReadOnly="TRUE"
+                Mult="TRUE"
+                Sortable="FALSE"
+                UnlimitedLengthInDocumentLibrary="FALSE"
+                ID="{6A9D77DD-3736-42FA-9D75-BA0B3DFAE74E}"
+                StaticName="ORG_MyReportees_ID"
+                Name="ORG_MyReportees_ID"
+                Group="ORG Columns" />     
+
+        <ContentType ID="0x0100F4C266967DF54F5FAB9CDAA2A09D51C9" 
+                Name="ORG Org Chart User" 
+                Group="ORG Content Types" 
+                Description="Creates a user for the org-chart webpart"
+                Inherits="TRUE"
+                Hidden="FALSE"
+                Version="0">
+                <FieldRefs>
+                        <FieldRef Name="LinkTitle" ID="{82642ec8-ef9b-478f-acf9-31f7d45fbc31}" DisplayName="Name" Required="TRUE" Sealed="TRUE"/>
+                        <FieldRef Name="LinkTitleNoMenu" ID="{bc91a437-52e7-49e1-8c4e-4698904b2b6d}" DisplayName="Name" Required="TRUE" Sealed="TRUE"/>
+                        <FieldRef Name="Title" ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}" DisplayName="Name" Required="TRUE" Sealed="TRUE"/>
+                        <FieldRef ID="{9390D837-3F84-4302-B615-B204B998B9D6}" /> 
+                        <FieldRef ID="{7537821E-1071-411D-B368-A05F8F748568}" />
+                        <FieldRef ID="{2498EF03-A11D-41BC-B91C-FFF4F6EF9BCE}" />
+                        <FieldRef ID="{F84FC9D9-6307-44BA-84C5-C029C0D19BE8}" />
+                        <FieldRef ID="{6A9D77DD-3736-42FA-9D75-BA0B3DFAE74E}" />
+                </FieldRefs>
+        </ContentType> 
+
+        <ListInstance 
+                CustomSchema="schema.xml"
+                FeatureId="00bfea71-de22-43b2-a848-c05709900100"
+                Title="Org Chart Config List" 
+                Description="List to configure the org chart webpart"
+                TemplateType="100"
+                Url="Lists/Orgconfig">
+        </ListInstance>
+</Elements>

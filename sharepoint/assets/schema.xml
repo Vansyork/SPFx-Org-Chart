@@ -1,0 +1,35 @@
+<List xmlns:ows="Microsoft SharePoint" Title="Org Chart Config List" EnableContentTypes="TRUE" FolderCreation="FALSE" Direction="$Resources:Direction;" Url="Lists/Orgconfig" BaseType="0" xmlns="http://schemas.microsoft.com/sharepoint/">
+ <MetaData>
+   <ContentTypes>
+     <ContentTypeRef ID="0x0100F4C266967DF54F5FAB9CDAA2A09D51C9" />
+   </ContentTypes>
+   <Fields></Fields>
+   <Views>
+     <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/images/generic.png" Url="AllItems.aspx">
+       <XslLink Default="TRUE">main.xsl</XslLink>
+       <JSLink>clienttemplates.js</JSLink>
+       <RowLimit Paged="TRUE">30</RowLimit>
+       <Toolbar Type="Standard" />
+       <InlineEdit>FALSE</InlineEdit>
+       <ViewFields>
+         <FieldRef Name="LinkTitle"></FieldRef>
+         <FieldRef Name="ORG_Department"></FieldRef>
+         <FieldRef Name="ORG_Description"></FieldRef>
+         <FieldRef Name="ORG_Picture"></FieldRef>
+         <FieldRef Name="ORG_MyReportees"></FieldRef>
+         <FieldRef Name="ORG_MyReportees_ID"></FieldRef>
+       </ViewFields>
+       <Query>
+         <OrderBy>
+           <FieldRef Name="ID" />
+         </OrderBy>
+       </Query>
+     </View>
+   </Views>
+   <Forms>
+     <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+     <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+     <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+   </Forms>
+ </MetaData>
+</List>

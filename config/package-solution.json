@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "org-chart",
+    "id": "9bf2b53d-2cb4-46c2-99cc-f62d6462a80d",
+    "version": "1.0.0.11",
+    "isDomainIsolated": false,
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": false,
+    "features": [{
+     "title": "asset-deployment-org-chart",
+     "description": "asset-deployment-org-chart",
+     "id": "CA0539C6-8539-475A-8319-84DF9812F2FA",
+     "version": "1.0.0.1",
+     "assets": {
+       "elementManifests": [
+         "elements.xml"
+       ],
+       "elementFiles":[
+         "schema.xml"
+       ]
+     }
+   }]
+  },
+  "paths": {
+    "zippedPackage": "solution/org-chart.sppkg"
+  }
+}
