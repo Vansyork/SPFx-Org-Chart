@@ -23,6 +23,7 @@ export interface IOrgChartWebPartProps {
 }
 
 export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebPartProps> {
+  private loadingIndicator = false;
   private _errorProps: ErrorHandlerProps = { errorMsg: "", error: false };
   private _dataService: IDataService;
   private get DataService(): IDataService {
@@ -62,14 +63,14 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
   private _createConfigList(listName: string): Promise<IList> {
     return this.DataService.checkIfListAlreadyExists(listName).then((exists) => {
       if (exists) {
-        return Promise.reject({ message: "List already exists." })
+        return Promise.reject({ message: "List already exists." });
       } else {
         return this.DataService.createList(listName).then((result: IList) => {
           this._listDropDownOptions.push({ key: result.Id, text: result.Title });
           this.context.propertyPane.refresh();
-          return result
+          return result;
         }).catch((error) => {
-          return Promise.reject(error)
+          return Promise.reject(error);
         });
       }
     })
@@ -108,7 +109,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
       return;
     }
 
-    this.context.statusRenderer.displayLoadingIndicator(this.domElement, 'options');
+    this.loadingIndicator = true;
 
     this.DataService.getOrgList().then(
       (orgLists: IList[]) => {
@@ -119,9 +120,9 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
         }
         else {
           // clear status indicator
-          this.context.statusRenderer.clearLoadingIndicator(this.domElement);
+          this.loadingIndicator = false;
           // re-render the web part as clearing the loading indicator removes the web part body
-          this.render();
+          // this.render();
         }
       })
       .then((persons: IPersonListItem[]) => {
@@ -132,9 +133,9 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
           this._setErrorProps({ statusText: "No users configured in the selected Config List." })
         }
         // clear status indicator
-        this.context.statusRenderer.clearLoadingIndicator(this.domElement);
+        this.loadingIndicator = false;
         // re-render the web part as clearing the loading indicator removes the web part body
-        this.render();
+        // this.render();
         // refresh the item selector control by repainting the property pane
         this.context.propertyPane.refresh();
       }).catch((error: ErrorObjectFormat | ProcessHttpClientResponseException) => {
@@ -153,7 +154,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
       // refresh the item selector control by repainting the property pane
       this.context.propertyPane.refresh();
       // communicate loading items
-      this.context.statusRenderer.displayLoadingIndicator(this.domElement, 'Users');
+      this.loadingIndicator = true;
 
       this.DataService.getUsersFromList(this.properties.selectedList)
         .then((persons: IPersonListItem[]) => {
@@ -165,7 +166,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
             this._setErrorProps({ statusText: "No users configured in the selected Config List." })
           }
           // clear status indicator
-          this.context.statusRenderer.clearLoadingIndicator(this.domElement);
+          this.loadingIndicator = false;
           // re-render the web part as clearing the loading indicator removes the web part body
           this.render();
           // refresh the item selector control by repainting the property pane
@@ -173,19 +174,17 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
         });
     }
     if (propertyPath === 'selectedUser' && newValue) {
-      if (this.properties.selectedUser && this.properties.selectedUser) {
+      if (this.properties.selectedUser && this.properties.selectedList) {
         // push new list value
         super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
         // reset selected item
         this._personNode = null;
         // communicate loading items
-        this.context.statusRenderer.displayLoadingIndicator(this.domElement, 'direct reports');
 
         this.DataService.getDirectReportsForUser(this.properties.selectedList, this.properties.selectedUser).then(
           (person: IPerson) => {
             this._personNode = person;
-            this.context.statusRenderer.clearLoadingIndicator(this.domElement);
-            // re-render the web part as clearing the loading indicator removes the web part body
+            // // re-render the web part as clearing the loading indicator removes the web part body
             this.render();
           })
           .catch((error: ErrorObjectFormat | ProcessHttpClientResponseException) => {
@@ -203,6 +202,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
+      showLoadingIndicator: this.loadingIndicator,    
       pages: [
         {
           header: {

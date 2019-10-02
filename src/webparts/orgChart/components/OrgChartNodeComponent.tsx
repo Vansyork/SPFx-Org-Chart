@@ -1,17 +1,9 @@
+import { Callout, DirectionalHint, getInitials, IPersona, Persona, PersonaSize } from 'office-ui-fabric-react';
 import * as React from 'react';
+import { IPerson } from '../../../interfaces/IPerson';
 import styles from './OrgChartNodeComponent.module.scss';
 
-import {
-  Persona,
-  PersonaSize,
-  PersonaPresence,
-  getInitials,
-  IPersona,
-  Callout,
-  DirectionalHint
-} from 'office-ui-fabric-react';
 
-import { IPerson } from '../../../interfaces/IPerson';
 
 export interface IOrgChartNodeComponentProps {
   node: IPerson;
@@ -33,7 +25,7 @@ export default class OrgChartNodeComponent extends React.Component<IOrgChartNode
     super(props);
     this._persona = {
       imageInitials: getInitials(this.props.node.name, false),
-      primaryText: this.props.node.name,
+      text: this.props.node.name,
       secondaryText: this.props.node.department,
       imageUrl: this.props.node.imageUrl || null
     };

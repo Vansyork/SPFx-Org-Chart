@@ -9,7 +9,7 @@ import * as ReactOrgChart from './react-orgchart';
 import './react-orgchart/index.css';
 
 export interface IOrgChartState {
-  errorHandlerProperties: ErrorHandlerProps
+  errorHandlerProperties: ErrorHandlerProps;
   error: boolean;
 }
 
@@ -22,7 +22,7 @@ export interface IOrgChartProps {
 }
 
 export interface ErrorHandlerProps {
-  error: boolean
+  error: boolean;
   errorMsg: string;
 }
 

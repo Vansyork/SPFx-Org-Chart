@@ -35,10 +35,10 @@ export default class DataService implements IDataService {
     return pnp.sp.web.lists.add(listName, "List to configure the org chart webpart", 100, true).then((orgListAddResult: ListAddResult) => {
       return this.configureOrgList((orgListAddResult)).then(() => {
         return pnp.sp.web.lists.getById(orgListAddResult.data.Id).views.get().then((views: any[]) => {
-          let defaultView: any = views.filter((v)=> {return v.DefaultView === true}).shift();
+          let defaultView: any = views.filter((v)=> {return v.DefaultView === true;}).shift();
           return Promise.resolve(<IList>{ Id: orgListAddResult.data.Id, Title: orgListAddResult.data.Title, ParentWebUrl: orgListAddResult.data.ParentWebUrl, NavUrl:defaultView.ServerRelativeUrl });
-        })
-      })
+        });
+      });
     }).catch(ErrorHandler.handleError);
 
   }

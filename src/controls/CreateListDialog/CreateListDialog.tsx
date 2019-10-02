@@ -75,7 +75,7 @@ export class CreateListDialog extends React.Component<ICreateListDialogProps, IC
                                 label='List title'
                                 errorMessage={this.state.errorMsg}
                                 value={this.state.listTitle}
-                                onChange={e => { this.setState({ listTitle: e }); this.state.error ? this.setState({ error: false, errorMsg: "" }) : null; }}
+                                onChange={(_event:React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue:string) => { this.setState({ listTitle: newValue }); this.state.error ? this.setState({ error: false, errorMsg: "" }) : null; }}
                             />
                             <DialogFooter>
                                 <PrimaryButton disabled={this.state.error || this.state.listTitle.length <= 0} onClick={this._saveAction} text='Create List' />
