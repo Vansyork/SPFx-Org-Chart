@@ -1,7 +1,7 @@
+import SPNameValidator, { Platform, ValidationType } from '@creativeacer/spnamevalidator/SPNameValidator';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { css, DefaultButton, Dialog, DialogFooter, DialogType, Link, List, PrimaryButton, Spinner, TextField } from 'office-ui-fabric-react';
 import * as React from 'react';
-import SPNameValidator, { Platform, ValidationType } from '../../helpers/SPNameValidator';
 import { IList } from "../../interfaces/IList";
 import styles from './CreateListDialog.module.scss';
 

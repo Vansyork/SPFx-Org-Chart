@@ -2,11 +2,13 @@ import { IWebPartContext } from '@microsoft/sp-webpart-base';
 import { Placeholder } from "@pnp/spfx-controls-react";
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react';
 import * as React from 'react';
+// import * as ReactOrgChart from './react-orgchart';
+// import './react-orgchart/index.css';
+import * as ReactOrgChart from 'react-orgchart';
 import { IPerson } from '../../../interfaces/IPerson';
 import OrgChartNodeComponent from "../components/OrgChartNodeComponent";
 import styles from './OrgChart.module.scss';
-import * as ReactOrgChart from './react-orgchart';
-import './react-orgchart/index.css';
+
 
 export interface IOrgChartState {
   errorHandlerProperties: ErrorHandlerProps;
