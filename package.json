@@ -12,6 +12,7 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "@creativeacer/spnamevalidator": "^8.1.1",
     "@microsoft/sp-core-library": "1.9.1",
     "@microsoft/sp-lodash-subset": "1.9.1",
     "@microsoft/sp-office-ui-fabric-core": "1.9.1",
@@ -25,7 +26,8 @@
     "npm": "^5.8.0",
     "office-ui-fabric-react": "6.189.2",
     "react": "16.8.5",
-    "react-dom": "16.8.5"
+    "react-dom": "16.8.5",
+    "react-orgchart": "^1.0.5"
   },
   "devDependencies": {
     "@microsoft/rush-stack-compiler-2.9": "0.7.16",
