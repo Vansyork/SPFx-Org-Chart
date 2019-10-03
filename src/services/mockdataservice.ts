@@ -174,6 +174,21 @@ export default class MockDataService implements IDataService {
       "imageUrl": null
     };
 
-    return Promise.resolve(initechOrg);
+    var initechOrg2: IPerson = {
+      "children": [{
+        "id": 10,
+        "name": "Rope Man",
+        "department": "Business Partners",
+        "description": null,
+        "imageUrl": null
+      }],
+      "id": 9,
+      "name": "Vans York ",
+      "department": "IT Head",
+      "description": null,
+      "imageUrl": null
+    };
+
+    return Promise.resolve(listid === "2" ? initechOrg2 : initechOrg);
   }
 }

@@ -58,6 +58,12 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
 
   public render(): React.ReactElement<IOrgChartProps> {
 
+    const CustomOrgChartNodeComponent = ({node}) => {
+      return (
+        <OrgChartNodeComponent node={node} styleIsSmall={this.props.styleIsSmall}></OrgChartNodeComponent>
+      );
+    };
+
     return (
       <div>
         {
@@ -74,7 +80,7 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
           this.props.node ? (
             <div className={styles.orgChart}>
               <div className={styles.container}>
-                <ReactOrgChart tree={this.props.node} NodeComponent={OrgChartNodeComponent} isSmall={this.props.styleIsSmall} />
+                <ReactOrgChart tree={this.props.node} NodeComponent={CustomOrgChartNodeComponent} />
               </div>
             </div>
           ) : (
