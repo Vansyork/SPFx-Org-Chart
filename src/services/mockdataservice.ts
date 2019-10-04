@@ -4,6 +4,9 @@ import { IPerson } from '../interfaces/IPerson';
 import { IPersonListItem } from "../interfaces/IPersonListItem";
 
 export default class MockDataService implements IDataService {
+  getDirectReportsForUserFromGraphAPI(userId: string): Promise<IPerson> {
+    throw new Error("Method not implemented.");
+  }
   checkIfListAlreadyExists(listName: string): Promise<boolean> {
     return Promise.resolve(false);
   }

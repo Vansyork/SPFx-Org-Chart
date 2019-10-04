@@ -19,6 +19,7 @@
     "@microsoft/sp-webpart-base": "1.9.1",
     "@pnp/pnpjs": "^1.0.4",
     "@pnp/spfx-controls-react": "1.2.5",
+    "@pnp/spfx-property-controls": "1.16.0",
     "@types/es6-promise": "0.0.33",
     "@types/react": "16.8.8",
     "@types/react-dom": "16.8.3",

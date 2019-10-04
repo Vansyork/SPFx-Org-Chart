@@ -35,8 +35,8 @@ export default class DataService implements IDataService {
     return pnp.sp.web.lists.add(listName, "List to configure the org chart webpart", 100, true).then((orgListAddResult: ListAddResult) => {
       return this.configureOrgList((orgListAddResult)).then(() => {
         return pnp.sp.web.lists.getById(orgListAddResult.data.Id).views.get().then((views: any[]) => {
-          let defaultView: any = views.filter((v)=> {return v.DefaultView === true;}).shift();
-          return Promise.resolve(<IList>{ Id: orgListAddResult.data.Id, Title: orgListAddResult.data.Title, ParentWebUrl: orgListAddResult.data.ParentWebUrl, NavUrl:defaultView.ServerRelativeUrl });
+          let defaultView: any = views.filter((v) => { return v.DefaultView === true; }).shift();
+          return Promise.resolve(<IList>{ Id: orgListAddResult.data.Id, Title: orgListAddResult.data.Title, ParentWebUrl: orgListAddResult.data.ParentWebUrl, NavUrl: defaultView.ServerRelativeUrl });
         });
       });
     }).catch(ErrorHandler.handleError);
@@ -65,7 +65,6 @@ export default class DataService implements IDataService {
   }
 
   public getDirectReportsForUser(listid: string, userid: string): Promise<IPerson> {
-    let person: Person;
 
     return this.getUsersFromList(listid).then((users: IPersonListItem[]) => {
       let filteredArray: Person[] = users.filter((u: IPersonListItem) => { return u.Id === userid; }).map(
@@ -81,6 +80,15 @@ export default class DataService implements IDataService {
         return ErrorHandler.handleError("error getting direct reports for user");
       }
     }).catch(ErrorHandler.handleError);
+  }
+
+  public getDirectReportsForUserFromGraphAPI(userId: string): Promise<IPerson> {
+
+    return pnp.graph.users.getById(userId).get().then((user) => {
+      console.log(user);
+      return Promise.resolve([]);
+    })
+    .catch(ErrorHandler.handleError);
   }
   //#endregion
 
@@ -107,7 +115,7 @@ export default class DataService implements IDataService {
       spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_Description"),
       spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_Picture"),
       spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_MyReportees"),
-      spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_MyReportees_ID")
+      spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_MyReportees_ID");
 
     return batch.execute().then(() => {
       return Promise.resolve();

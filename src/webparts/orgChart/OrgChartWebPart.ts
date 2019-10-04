@@ -2,6 +2,7 @@ import { Environment, EnvironmentType, Version } from '@microsoft/sp-core-librar
 import { IPropertyPaneConfiguration, IPropertyPaneDropdownOption, PropertyPaneDropdown, PropertyPaneToggle } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import pnp, { ProcessHttpClientResponseException } from "@pnp/pnpjs";
+import { IPropertyFieldGroupOrPerson, PrincipalType, PropertyFieldPeoplePicker } from '@pnp/spfx-property-controls/lib/PropertyFieldPeoplePicker';
 import * as strings from 'OrgChartWebPartStrings';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
@@ -20,6 +21,8 @@ export interface IOrgChartWebPartProps {
   selectedUser: string;
   selectedStyleSmall: boolean;
   createConfigList: any;
+  selectedGraphUser: IPropertyFieldGroupOrPerson[];
+  useGraphApi: boolean;
 }
 
 export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebPartProps> {
@@ -41,6 +44,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
   private _personNode: IPerson = null;
   private _listDropDownOptions: IPropertyPaneDropdownOption[] = [];
   private _userDropDownOptions: IPropertyPaneDropdownOption[] = [];
+  private _useGraphApi: boolean = false;
   protected onInit(): Promise<void> {
     pnp.setup({
       spfxContext: this.context
@@ -145,9 +149,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
 
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
     this._resetErrorProps();
-    if (propertyPath === 'selectedList' && newValue) {
-      // push new list value
-      super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    if (propertyPath === 'selectedList' && (newValue != oldValue)) {
       // reset selected item
       this.properties.selectedUser = undefined;
       this._personNode = null;
@@ -173,10 +175,8 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
           this.context.propertyPane.refresh();
         });
     }
-    if (propertyPath === 'selectedUser' && newValue) {
+    if (propertyPath === 'selectedUser' && (newValue != oldValue)) {
       if (this.properties.selectedUser && this.properties.selectedList) {
-        // push new list value
-        super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
         // reset selected item
         this._personNode = null;
         // communicate loading items
@@ -191,18 +191,33 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
             this._setErrorProps(error);
           });
       }
-      else {
-        super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-      }
     }
-    else {
-      super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    if (propertyPath === 'useGraphApi' && (newValue != oldValue)) {
+      this._useGraphApi = newValue;
     }
+    if (propertyPath === 'selectedGraphUser' && (newValue != oldValue)) {
+      // reset selected item
+      this._personNode = null;
+      // communicate loading items
+
+      this.DataService.getDirectReportsForUserFromGraphAPI(this.properties.selectedGraphUser[0].id).then(
+        (person: IPerson) => {
+          this._personNode = person;
+          // // re-render the web part as clearing the loading indicator removes the web part body
+          this.render();
+        })
+        .catch((error: ErrorObjectFormat | ProcessHttpClientResponseException) => {
+          this._setErrorProps(error);
+        });
+    }
+
+    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
-      showLoadingIndicator: this.loadingIndicator,    
+      showLoadingIndicator: this.loadingIndicator,
+
       pages: [
         {
           header: {
@@ -212,15 +227,33 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
             {
               groupName: strings.BasicGroupName,
               groupFields: [
+                PropertyPaneToggle('useGraphApi', {
+                  label: "Use AD data to build the org chart",
+                  checked: false
+                }),
                 PropertyPaneDropdown('selectedList', {
                   label: "Select Org Config List",
-                  options: this._listDropDownOptions
+                  options: this._listDropDownOptions,
+                  disabled: this._useGraphApi
                 }),
                 PropertyPaneDropdown('selectedUser', {
-                  label: "Select user to start building the Org-Chart",
+                  label: "Select user to start building the Org-Chart from the config list",
                   options: this._userDropDownOptions,
-                  disabled: (this._userDropDownOptions.length < 1),
+                  disabled: (this._userDropDownOptions.length < 1 || this._useGraphApi),
                   selectedKey: null
+                }),
+                PropertyFieldPeoplePicker('selectedGraphUser', {
+                  label: 'Select user to start building the Org-Chart from AD data',
+                  initialData: this.properties.selectedGraphUser,
+                  allowDuplicate: false,
+                  principalType: [PrincipalType.Users],
+                  onPropertyChange: this.onPropertyPaneFieldChanged,
+                  context: this.context,
+                  properties: this.properties,
+                  onGetErrorMessage: null,
+                  key: 'peopleFieldId',
+                  multiSelect: false,
+                  disabled: !this._useGraphApi
                 })
               ]
             },
