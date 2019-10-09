@@ -1,59 +1,55 @@
-import { ValueEntity } from "../interfaces/IGraphUserdata";
+import { IGraphUserdata, ValueEntity } from "../interfaces/IGraphUserdata";
 import { IPerson } from "../interfaces/IPerson";
-import { IPersonListItem } from "../interfaces/IPersonListItem";
+import { IPersonListItem, IReportee } from "../interfaces/IPersonListItem";
+import DataService from "../services/dataservice";
 export class Person implements IPerson {
     public id: string | number;
     public name: string;
     public department: string;
     public description?: string;
     public imageUrl?: string;
-    public children?: Person[] = [];
-    public originalListItem: IPersonListItem;
-    constructor(listItem: IPersonListItem, allUsersData: IPersonListItem[] | ValueEntity[]) {
+    public children: Person[] = [];
+    public email?: string;
+    constructor(listItem: IPersonListItem, allUsersData?: IPersonListItem[], dataService?: DataService) {
         this.id = listItem.Id;
         this.name = listItem.Title;
         this.department = listItem.ORG_Department;
         this.description = listItem.ORG_Description || null;
         this.imageUrl = listItem.ORG_Picture ? listItem.ORG_Picture.Url : null;
-        this.originalListItem = listItem;
+        this.email = listItem.email ? listItem.email : null;
 
-        listItem.ORG_MyReportees.forEach(reportee => {
-            //u.Id != this.id filter wrongly configured user as reportee
-            if (this.isValueEntity(allUsersData)) {
-                let filterdUserData: ValueEntity[];
-                filterdUserData = (allUsersData as ValueEntity[]).filter((u) => { return (u.id === reportee.Id && u.id != this.id); });
-                if (filterdUserData.length > 0) {
-                    filterdUserData.forEach((user: ValueEntity) => {
-                        let listItem: IPersonListItem = {
-                            Id: user.id,
-                            Title: user.displayName,
-                            ORG_Department: user.jobTitle,
-                            ORG_Description: user.jobTitle,
-                            ORG_Picture: { Url: null },
-                            // ORG_MyReportees: (allUsersData as ValueEntity[]).map((val: ValueEntity) => { return { Id: val.id }; })
-                            ORG_MyReportees: []
-                        };
-                        this.children.push(new Person(listItem, allUsersData));
-                    });
-                }
-            } else {
+        if (allUsersData) {
+            listItem.ORG_MyReportees.forEach((reportee: IReportee) => {
+                //u.Id != this.id filter wrongly configured user as reportee
                 let filterdUserData: IPersonListItem[];
-                filterdUserData = (allUsersData as IPersonListItem[]).filter((u) => { return (u.Id === reportee.Id && u.Id != this.id); });
+                filterdUserData = allUsersData.filter((u) => { return (u.Id === reportee.Id && u.Id != this.id); });
                 if (filterdUserData.length > 0) {
                     filterdUserData.forEach(element => {
                         this.children.push(new Person(element, allUsersData));
                     });
                 }
-            }
-        });
-
-    }
-
-    private isValueEntity(arg: Array<any>): arg is ValueEntity[] {
-        if (arg.length > 1) {
-            return arg[0].displayName !== undefined;
+            });
         } else {
-            return false;
+            if(this.email){
+                dataService.getDirectReportsForUserFromGraphAPI(this.email).then(
+                    (result: IGraphUserdata) => {
+                        result.value.forEach((element: ValueEntity) => {
+                            this.children.push(
+                                new Person(
+                                    {
+                                        Id: element.id,
+                                        Title: element.displayName,
+                                        ORG_Department: element.jobTitle,
+                                        ORG_Description: element.jobTitle,
+                                        ORG_Picture: { Url: null },
+                                        email: element.mail
+                                    }, null, dataService));
+                        });
+                    }
+                );
+            }
+
         }
+
     }
 }

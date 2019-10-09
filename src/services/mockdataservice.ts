@@ -1,11 +1,11 @@
-import { IPropertyFieldGroupOrPerson } from '@pnp/spfx-property-controls/lib/PropertyFieldPeoplePicker';
 import { IDataService } from '../interfaces/IDataService';
+import { IGraphUserdata } from '../interfaces/IGraphUserdata';
 import { IList } from "../interfaces/IList";
 import { IPerson } from '../interfaces/IPerson';
 import { IPersonListItem } from "../interfaces/IPersonListItem";
 
 export default class MockDataService implements IDataService {
-  getDirectReportsForUserFromGraphAPI(user: IPropertyFieldGroupOrPerson): Promise<IPerson> {
+  getDirectReportsForUserFromGraphAPI(email: string): Promise<IGraphUserdata> {
     var initechOrg: IPerson = {
       "children": [{
         "children": [{
@@ -140,7 +140,7 @@ export default class MockDataService implements IDataService {
       "description": null,
       "imageUrl": null
     };
-    return Promise.resolve(initechOrg);
+    return Promise.resolve(null);
   }
   checkIfListAlreadyExists(listName: string): Promise<boolean> {
     return Promise.resolve(false);

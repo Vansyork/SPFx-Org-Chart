@@ -5,10 +5,10 @@ import { MessageBar, MessageBarType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import * as ReactOrgChart from 'react-orgchart';
 import { IPerson } from '../../../interfaces/IPerson';
+import { Person } from '../../../models/person';
 import DataService from '../../../services/dataservice';
 import OrgChartNodeComponent from "../components/OrgChartNodeComponent";
 import styles from './OrgChart.module.scss';
-
 
 
 export interface IOrgChartState {
@@ -27,6 +27,7 @@ export interface IOrgChartProps {
   selectedGraphUser: IPropertyFieldGroupOrPerson;
   selectedList: string;
   selectedUser: string;
+
 }
 
 export interface ErrorHandlerProps {
@@ -35,6 +36,7 @@ export interface ErrorHandlerProps {
 }
 
 export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartState> {
+  node: IPerson;
   constructor(props) {
     super(props);
     this.state = {
@@ -63,11 +65,17 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
     }
     if (this.props.useGraphApi !== nextProps.useGraphApi) {
       if (nextProps.useGraphApi) {
-
-        this.props.dataService.getDirectReportsForUserFromGraphAPI(nextProps.selectedGraphUser).then(
-          (person: IPerson) => {
-            this.setState({ node: person });
-          });
+        this.setState({
+          node: new Person(
+            {
+              Id: this.props.selectedGraphUser.id,
+              Title: this.props.selectedGraphUser.fullName,
+              ORG_Department: this.props.selectedGraphUser.jobTitle,
+              ORG_Description: this.props.selectedGraphUser.jobTitle,
+              ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
+              email: this.props.selectedGraphUser.email
+            }, null, this.props.dataService)
+        });
       }
       else {
         this.props.dataService.getDirectReportsForUser(nextProps.selectedList, nextProps.selectedUser).then(
@@ -79,11 +87,18 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
   }
 
   public componentDidMount() {
-    if (this.props.useGraphApi) {
-      this.props.dataService.getDirectReportsForUserFromGraphAPI(this.props.selectedGraphUser).then(
-        (person: IPerson) => {
-          this.setState({ node: person });
-        });
+    if (this.props.useGraphApi) {        
+      this.setState({
+        node: new Person(
+          {
+            Id: this.props.selectedGraphUser.id,
+            Title: this.props.selectedGraphUser.fullName,
+            ORG_Department: this.props.selectedGraphUser.jobTitle,
+            ORG_Description: this.props.selectedGraphUser.jobTitle,
+            ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
+            email: this.props.selectedGraphUser.email
+          }, null, this.props.dataService)
+      });
     } else {
       this.props.dataService.getDirectReportsForUser(this.props.selectedList, this.props.selectedUser).then(
         (person: IPerson) => {
@@ -113,10 +128,10 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
             </MessageBar>) : (null)
         }
         {
-          this.state.node ? (
+          this.node ? (
             <div className={styles.orgChart}>
               <div className={styles.container}>
-                <ReactOrgChart tree={this.state.node} NodeComponent={CustomOrgChartNodeComponent} />
+                <ReactOrgChart tree={this.node} NodeComponent={CustomOrgChartNodeComponent} />
               </div>
             </div>
           ) : (

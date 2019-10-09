@@ -1,10 +1,9 @@
 import { MSGraphClient, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import pnp, { ContentTypeAddResult, List, ListAddResult, ProcessHttpClientResponseException } from "@pnp/pnpjs";
-import { IPropertyFieldGroupOrPerson } from "@pnp/spfx-property-controls/lib/PropertyFieldPeoplePicker";
 import ErrorHandler from '../helpers/ErrorHandler';
 import { IDataService } from '../interfaces/IDataService';
-import { IGraphUserdata, ValueEntity } from "../interfaces/IGraphUserdata";
+import { IGraphUserdata } from "../interfaces/IGraphUserdata";
 import { IList } from "../interfaces/IList";
 import { IPerson } from '../interfaces/IPerson';
 import { IPersonListItem } from "../interfaces/IPersonListItem";
@@ -66,7 +65,6 @@ export default class DataService implements IDataService {
   }
 
   public getDirectReportsForUser(listid: string, userid: string): Promise<IPerson> {
-
     return this.getUsersFromList(listid).then((users: IPersonListItem[]) => {
       let filteredArray: Person[] = users.filter((u: IPersonListItem) => { return u.Id === userid; }).map(
         (filteredUser: IPersonListItem) => {
@@ -83,38 +81,38 @@ export default class DataService implements IDataService {
     }).catch(ErrorHandler.handleError);
   }
 
-  public getDirectReportsForUserFromGraphAPI(user: IPropertyFieldGroupOrPerson): Promise<IPerson> {
-    return this.getDirectReportsForUserFromGraphAPI2(user.email).then((startUserReportees: IGraphUserdata) => {
-      let listItem: IPersonListItem = {
-        Id: user.id,
-        Title: user.fullName,
-        ORG_Department: user.jobTitle,
-        ORG_Description: user.description,
-        ORG_Picture: { Url: user.imageUrl },
-        ORG_MyReportees:  startUserReportees.value.map((val: ValueEntity) => { return { Id: val.id }; })
-      };
-      let promises = [];
-      if (startUserReportees.value.length > 0) {
-        startUserReportees.value.forEach((directreport: ValueEntity) => {
-          promises.push(this.getDirectReportsForUserFromGraphAPI2(directreport.mail));
-        });
-        return Promise.all(promises).then((promisesResults: IGraphUserdata[]) => {
-          console.log(promisesResults);
-          console.log(startUserReportees);
-          let allActors: ValueEntity[] = startUserReportees.value;
-          promisesResults.forEach((element: IGraphUserdata) => {
-            allActors = allActors.concat(element.value);
-          });
+  // public getDirectReportsForUserFromGraphAPI(user: IPropertyFieldGroupOrPerson): Promise<IPerson> {
+  //   return this.getDirectReportsForUserFromGraphAPI2(user.email).then((startUser: IGraphUserdata) => {
+  //     let promises = [];
+  //     let allUsersListItem: IPersonListItem[] = [];
+  //     startUser.value.forEach((directreport: ValueEntity) => {
+  //       promises.push(this.getDirectReportsForUserFromGraphAPI2(directreport.mail).then(
+  //         (data: IGraphUserdata) => {
+  //           allUsersListItem.push({
+  //             Id: directreport.id,
+  //             Title: directreport.displayName,
+  //             ORG_Department: directreport.jobTitle,
+  //             ORG_Description: directreport.jobTitle,
+  //             ORG_Picture: { Url: null },
+  //             ORG_MyReportees: data.value.length > 0 ? startUser.value.map((val: ValueEntity) => { return { Id: val.id }; }) : [],
+  //           });
+  //         }
+  //       ));
+  //     });
+  //     return Promise.all(promises).then((promisesResults: IGraphUserdata[]) => {
+  //       return Promise.resolve(new Person({
+  //         Id: user.id,
+  //         Title: user.fullName,
+  //         ORG_Department: user.jobTitle,
+  //         ORG_Description: user.jobTitle,
+  //         ORG_Picture: { Url: null },
+  //         ORG_MyReportees: startUser.value.length > 0 ? startUser.value.map((val: ValueEntity) => { return { Id: val.id }; }) : [],
+  //       }, allUsersListItem));
+  //     });
+  //   });
+  // }
 
-          return Promise.resolve(new Person(listItem, allActors));
-        });
-      } else {
-        return Promise.resolve(new Person(listItem, startUserReportees.value));
-      }
-    });
-  }
-
-  private getDirectReportsForUserFromGraphAPI2(userEmail: string): Promise<IGraphUserdata> {
+  public getDirectReportsForUserFromGraphAPI(userEmail: string): Promise<IGraphUserdata> {
     return this.context.msGraphClientFactory.getClient()
       .then((client: MSGraphClient) => {
         return client
@@ -124,64 +122,6 @@ export default class DataService implements IDataService {
           .catch(ErrorHandler.handleError);
       });
   }
-
-
-
-
-  // let allusers = [];
-  // if (result) {
-  //   result.forEach((element: IGraphUserdata) => {
-  //     if (element && element.value && element.value.length > 0)
-  //       element.value.forEach((directreport: ValueEntity) => {
-  //         allusers.push(directreport);
-  //       });
-  //   });
-  // }
-  // console.log(allusers);
-  // let listItem: IPersonListItem = {
-  //   Id: user.id,
-  //   Title: user.fullName,
-  //   ORG_Department: user.jobTitle,
-  //   ORG_Description: user.description,
-  //   ORG_Picture: { Url: user.imageUrl },
-  //   ORG_MyReportees: []
-  // };
-
-  // });
-
-  // return this.context.msGraphClientFactory.getClient()
-  //   .then((client: MSGraphClient) => {
-  //     return client
-  //       .api(`users/${user.email}/directReports`)
-  //       .version("v1.0")
-  //       .get()
-  //       .then((userDirectReports: IGraphUserdata) => {
-  //         let promises = [];
-  //         let listItemPersons: IPersonListItem[] = [];
-  //         userDirectReports.value.forEach((element: ValueEntity) => {
-  //           promises.push(this.getDirectReportsForUserFromGraphAPI({ id: element.id, description: element.jobTitle, email: element.mail, fullName: element.displayName, login: element.mail }));
-  //         });
-  //         return Promise.all(promises).then((result: Person[]) => {
-  //           result.forEach((element: Person) => {
-  //             listItemPersons.push(element.originalListItem);
-  //           });
-  //           let listItem: IPersonListItem = {
-  //             Id: user.id,
-  //             Title: user.fullName,
-  //             ORG_Department: user.jobTitle,
-  //             ORG_Description: user.description,
-  //             ORG_Picture: { Url: user.imageUrl },
-  //             ORG_MyReportees: userDirectReports.value.map((val: ValueEntity) => { return { Id: val.id }; })
-  //           };
-  //           return Promise.resolve(new Person(listItem, listItemPersons));
-  //         });
-  //       })
-  //       .catch(ErrorHandler.handleError);
-  //   });
-
-
-
-
   //#endregion
 
   //#region private methods
