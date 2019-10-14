@@ -12,9 +12,8 @@ import { SPListData } from "../interfaces/SPListData";
 import { Person } from '../models/person';
 
 export default class DataService implements IDataService {
-  constructor(protected context: WebPartContext) {
+  constructor(protected context: WebPartContext) { }
 
-  }
   //#region public methods
   public checkIfListAlreadyExists(listName: string): Promise<boolean> {
     return pnp.sp.web.lists.getByTitle(listName).get().then((listResult: List) => {
@@ -40,7 +39,6 @@ export default class DataService implements IDataService {
         });
       });
     }).catch(ErrorHandler.handleError);
-
   }
 
   public getUsersFromList(listid: string): Promise<IPersonListItem[]> {
@@ -59,7 +57,6 @@ export default class DataService implements IDataService {
       SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => response.json())
       .then((jsonData: { value: IList[] }) => {
-        //return jsonData.value;
         return this.filterOrgChartContentTypesFromLists(jsonData.value);
       }).catch(ErrorHandler.handleError);
   }
@@ -81,37 +78,6 @@ export default class DataService implements IDataService {
     }).catch(ErrorHandler.handleError);
   }
 
-  // public getDirectReportsForUserFromGraphAPI(user: IPropertyFieldGroupOrPerson): Promise<IPerson> {
-  //   return this.getDirectReportsForUserFromGraphAPI2(user.email).then((startUser: IGraphUserdata) => {
-  //     let promises = [];
-  //     let allUsersListItem: IPersonListItem[] = [];
-  //     startUser.value.forEach((directreport: ValueEntity) => {
-  //       promises.push(this.getDirectReportsForUserFromGraphAPI2(directreport.mail).then(
-  //         (data: IGraphUserdata) => {
-  //           allUsersListItem.push({
-  //             Id: directreport.id,
-  //             Title: directreport.displayName,
-  //             ORG_Department: directreport.jobTitle,
-  //             ORG_Description: directreport.jobTitle,
-  //             ORG_Picture: { Url: null },
-  //             ORG_MyReportees: data.value.length > 0 ? startUser.value.map((val: ValueEntity) => { return { Id: val.id }; }) : [],
-  //           });
-  //         }
-  //       ));
-  //     });
-  //     return Promise.all(promises).then((promisesResults: IGraphUserdata[]) => {
-  //       return Promise.resolve(new Person({
-  //         Id: user.id,
-  //         Title: user.fullName,
-  //         ORG_Department: user.jobTitle,
-  //         ORG_Description: user.jobTitle,
-  //         ORG_Picture: { Url: null },
-  //         ORG_MyReportees: startUser.value.length > 0 ? startUser.value.map((val: ValueEntity) => { return { Id: val.id }; }) : [],
-  //       }, allUsersListItem));
-  //     });
-  //   });
-  // }
-
   public getDirectReportsForUserFromGraphAPI(userEmail: string): Promise<IGraphUserdata> {
     return this.context.msGraphClientFactory.getClient()
       .then((client: MSGraphClient) => {
@@ -120,6 +86,17 @@ export default class DataService implements IDataService {
           .version("v1.0")
           .get()
           .catch(ErrorHandler.handleError);
+      });
+  }
+
+  public getUserPhotoFromGraphApi(userEmail: string) {
+    return this.context.msGraphClientFactory.getClient()
+      .then((client: MSGraphClient) => {
+        return client
+          .api(`users/${userEmail}/photo/$value`)
+          .version('v1.0')
+          .responseType('blob')
+          .get();
       });
   }
   //#endregion

@@ -66,29 +66,35 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
     if (this.props.errorHandlerProperties !== nextProps.errorHandlerProperties) {
       this.setState({ errorHandlerProperties: nextProps.errorHandlerProperties });
     }
-    if (this.props.useGraphApi !== nextProps.useGraphApi) {
-      if (nextProps.useGraphApi) {
-        this._person = new Person(
-          {
-            Id: this.props.selectedGraphUser.id,
-            Title: this.props.selectedGraphUser.fullName,
-            ORG_Department: this.props.selectedGraphUser.jobTitle,
-            ORG_Description: this.props.selectedGraphUser.jobTitle,
-            ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
-            email: this.props.selectedGraphUser.email
-          }, null, this.props.dataService, this.setPersonSate.bind(this));
-      }
-      else {
-        this.props.dataService.getDirectReportsForUser(nextProps.selectedList, nextProps.selectedUser).then(
-          (person: IPerson) => {
-            this.setState({ node: person });
-          });
-      }
+
+    if (this.state.node) {
+        this.setState({ node: null });
     }
+    if (nextProps.useGraphApi && nextProps.selectedGraphUser) {
+      this._person = new Person(
+        {
+          Id: nextProps.selectedGraphUser.id,
+          Title: nextProps.selectedGraphUser.fullName,
+          ORG_Department: nextProps.selectedGraphUser.jobTitle,
+          ORG_Description: nextProps.selectedGraphUser.jobTitle,
+          ORG_Picture: { Url: nextProps.selectedGraphUser.imageUrl },
+          email: nextProps.selectedGraphUser.email
+        }, null, this.props.dataService, this.setPersonSate.bind(this));
+    }
+    else if(!nextProps.useGraphApi) {
+      this.props.dataService.getDirectReportsForUser(nextProps.selectedList, nextProps.selectedUser).then(
+        (person: IPerson) => {
+          this.setState({ node: person });
+        });
+    }
+
   }
 
   public componentDidMount() {
-    if (this.props.useGraphApi) {
+    if (this.state.node) {
+        this.setState({ node: null });
+    }
+    if (this.props.useGraphApi && this.props.selectedGraphUser) {
       this._person = new Person(
         {
           Id: this.props.selectedGraphUser.id,
@@ -98,7 +104,7 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
           ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
           email: this.props.selectedGraphUser.email
         }, null, this.props.dataService, this.setPersonSate.bind(this));
-    } else {
+    } else if(!this.props.useGraphApi && this.props.selectedList && this.props.selectedUser){
       this.props.dataService.getDirectReportsForUser(this.props.selectedList, this.props.selectedUser).then(
         (person: IPerson) => {
           this.setState({ node: person });

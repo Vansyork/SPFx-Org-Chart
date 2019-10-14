@@ -29,31 +29,34 @@ export class Person implements IPerson {
                     });
                 }
             });
-        } else {
-            if (this.email) {
-                dataService.getDirectReportsForUserFromGraphAPI(this.email).then(
-                    (result: IGraphUserdata) => {
-                        result.value.forEach((element: ValueEntity) => {
-                            this.children.push(
-                                new Person(
-                                    {
-                                        Id: element.id,
-                                        Title: element.displayName,
-                                        ORG_Department: element.jobTitle,
-                                        ORG_Description: element.jobTitle,
-                                        ORG_Picture: { Url: null },
-                                        email: element.mail
-                                    }, null, dataService, setStateFunc));
-                        });
-                        if (setStateFunc) {
-                            setStateFunc();
-                        }
+        } else if (this.email) {
+            dataService.getDirectReportsForUserFromGraphAPI(this.email).then(
+                (result: IGraphUserdata) => {
+                    result.value.forEach((element: ValueEntity) => {
+                        this.children.push(
+                            new Person(
+                                {
+                                    Id: element.id,
+                                    Title: element.displayName,
+                                    ORG_Department: element.jobTitle,
+                                    ORG_Description: element.jobTitle,
+                                    email: element.mail
+                                }, null, dataService, setStateFunc));
+                    });
+                    if (setStateFunc) {
+                        setStateFunc();
                     }
-                );
-            }
-
+                    dataService.getUserPhotoFromGraphApi(this.email).then(
+                        (blob: any) => {
+                            this.imageUrl = window.URL.createObjectURL(blob);
+                            if (setStateFunc) {
+                                setStateFunc();
+                            }
+                        }
+                    );
+                }
+            );
         }
-
     }
 
 }
