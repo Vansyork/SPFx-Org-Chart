@@ -99,6 +99,16 @@ export default class DataService implements IDataService {
           .get();
       });
   }
+
+  public getUserInfoFromGraphApi(userEmail: string) {
+    return this.context.msGraphClientFactory.getClient()
+      .then((client: MSGraphClient) => {
+        return client
+          .api(`users/${userEmail}`)
+          .version('beta')
+          .get();
+      });
+  }
   //#endregion
 
   //#region private methods

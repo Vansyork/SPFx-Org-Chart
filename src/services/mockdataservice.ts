@@ -5,6 +5,12 @@ import { IPerson } from '../interfaces/IPerson';
 import { IPersonListItem } from "../interfaces/IPersonListItem";
 
 export default class MockDataService implements IDataService {
+  public getUserPhotoFromGraphApi(userEmail: string) {
+    return Promise.reject("Image not found");
+  }
+  public getUserInfoFromGraphApi(userEmail: string) {
+    return Promise.resolve({ jobTitle: "Developer", department: "IT" });
+  }
   public getDirectReportsForUserFromGraphAPI(email: string): Promise<IGraphUserdata> {
 
     let results = [

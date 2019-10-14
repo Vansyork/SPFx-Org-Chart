@@ -5,10 +5,10 @@ import DataService from "../services/dataservice";
 export class Person implements IPerson {
     public id: string | number;
     public name: string;
-    public department: string;
+    public children: Person[] = [];
+    public department?: string;
     public description?: string;
     public imageUrl?: string;
-    public children: Person[] = [];
     public email?: string;
     constructor(listItem: IPersonListItem, allUsersData?: IPersonListItem[], dataService?: DataService, setStateFunc?: Function) {
         this.id = listItem.Id;
@@ -38,22 +38,12 @@ export class Person implements IPerson {
                                 {
                                     Id: element.id,
                                     Title: element.displayName,
-                                    ORG_Department: element.jobTitle,
-                                    ORG_Description: element.jobTitle,
                                     email: element.mail
                                 }, null, dataService, setStateFunc));
                     });
                     if (setStateFunc) {
                         setStateFunc();
                     }
-                    dataService.getUserPhotoFromGraphApi(this.email).then(
-                        (blob: any) => {
-                            this.imageUrl = window.URL.createObjectURL(blob);
-                            if (setStateFunc) {
-                                setStateFunc();
-                            }
-                        }
-                    );
                 }
             );
         }
