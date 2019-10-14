@@ -10,7 +10,7 @@ export class Person implements IPerson {
     public imageUrl?: string;
     public children: Person[] = [];
     public email?: string;
-    constructor(listItem: IPersonListItem, allUsersData?: IPersonListItem[], dataService?: DataService) {
+    constructor(listItem: IPersonListItem, allUsersData?: IPersonListItem[], dataService?: DataService, setStateFunc?: Function) {
         this.id = listItem.Id;
         this.name = listItem.Title;
         this.department = listItem.ORG_Department;
@@ -30,7 +30,7 @@ export class Person implements IPerson {
                 }
             });
         } else {
-            if(this.email){
+            if (this.email) {
                 dataService.getDirectReportsForUserFromGraphAPI(this.email).then(
                     (result: IGraphUserdata) => {
                         result.value.forEach((element: ValueEntity) => {
@@ -43,8 +43,11 @@ export class Person implements IPerson {
                                         ORG_Description: element.jobTitle,
                                         ORG_Picture: { Url: null },
                                         email: element.mail
-                                    }, null, dataService));
+                                    }, null, dataService, setStateFunc));
                         });
+                        if (setStateFunc) {
+                            setStateFunc();
+                        }
                     }
                 );
             }
@@ -52,4 +55,5 @@ export class Person implements IPerson {
         }
 
     }
+
 }

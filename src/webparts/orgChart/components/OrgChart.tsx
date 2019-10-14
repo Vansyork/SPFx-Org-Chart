@@ -10,7 +10,6 @@ import DataService from '../../../services/dataservice';
 import OrgChartNodeComponent from "../components/OrgChartNodeComponent";
 import styles from './OrgChart.module.scss';
 
-
 export interface IOrgChartState {
   errorHandlerProperties: ErrorHandlerProps;
   error: boolean;
@@ -36,7 +35,7 @@ export interface ErrorHandlerProps {
 }
 
 export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartState> {
-  node: IPerson;
+  private _person: Person;
   constructor(props) {
     super(props);
     this.state = {
@@ -44,6 +43,10 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
       error: false,
       node: null
     };
+  }
+
+  public setPersonSate() {
+    this.setState({ node: this._person });
   }
 
   private _onConfigure(ctx: IWebPartContext) {
@@ -65,17 +68,15 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
     }
     if (this.props.useGraphApi !== nextProps.useGraphApi) {
       if (nextProps.useGraphApi) {
-        this.setState({
-          node: new Person(
-            {
-              Id: this.props.selectedGraphUser.id,
-              Title: this.props.selectedGraphUser.fullName,
-              ORG_Department: this.props.selectedGraphUser.jobTitle,
-              ORG_Description: this.props.selectedGraphUser.jobTitle,
-              ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
-              email: this.props.selectedGraphUser.email
-            }, null, this.props.dataService)
-        });
+        this._person = new Person(
+          {
+            Id: this.props.selectedGraphUser.id,
+            Title: this.props.selectedGraphUser.fullName,
+            ORG_Department: this.props.selectedGraphUser.jobTitle,
+            ORG_Description: this.props.selectedGraphUser.jobTitle,
+            ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
+            email: this.props.selectedGraphUser.email
+          }, null, this.props.dataService, this.setPersonSate.bind(this));
       }
       else {
         this.props.dataService.getDirectReportsForUser(nextProps.selectedList, nextProps.selectedUser).then(
@@ -87,18 +88,16 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
   }
 
   public componentDidMount() {
-    if (this.props.useGraphApi) {        
-      this.setState({
-        node: new Person(
-          {
-            Id: this.props.selectedGraphUser.id,
-            Title: this.props.selectedGraphUser.fullName,
-            ORG_Department: this.props.selectedGraphUser.jobTitle,
-            ORG_Description: this.props.selectedGraphUser.jobTitle,
-            ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
-            email: this.props.selectedGraphUser.email
-          }, null, this.props.dataService)
-      });
+    if (this.props.useGraphApi) {
+      this._person = new Person(
+        {
+          Id: this.props.selectedGraphUser.id,
+          Title: this.props.selectedGraphUser.fullName,
+          ORG_Department: this.props.selectedGraphUser.jobTitle,
+          ORG_Description: this.props.selectedGraphUser.jobTitle,
+          ORG_Picture: { Url: this.props.selectedGraphUser.imageUrl },
+          email: this.props.selectedGraphUser.email
+        }, null, this.props.dataService, this.setPersonSate.bind(this));
     } else {
       this.props.dataService.getDirectReportsForUser(this.props.selectedList, this.props.selectedUser).then(
         (person: IPerson) => {
@@ -128,10 +127,10 @@ export default class OrgChart extends React.Component<IOrgChartProps, IOrgChartS
             </MessageBar>) : (null)
         }
         {
-          this.node ? (
+          this.state.node ? (
             <div className={styles.orgChart}>
               <div className={styles.container}>
-                <ReactOrgChart tree={this.node} NodeComponent={CustomOrgChartNodeComponent} />
+                <ReactOrgChart tree={this.state.node} NodeComponent={CustomOrgChartNodeComponent} />
               </div>
             </div>
           ) : (
