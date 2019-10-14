@@ -16,7 +16,9 @@
     "properties": {
       "selectedList": "",
       "selectedUser": "",
-      "selectedStyleSmall": false
+      "selectedStyleSmall": false,
+      "useGraphApi": false,
+      "selectedGraphUser":null
     }
   }]
 }

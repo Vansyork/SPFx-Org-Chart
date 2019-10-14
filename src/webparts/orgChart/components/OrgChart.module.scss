@@ -3,9 +3,7 @@
 .orgChart {
   overflow-x: auto;
   .container {
-    //max-width: 700px;
     margin: 0px auto;
-    // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
     @include ms-Grid;
     margin-bottom: 25px;
   }
@@ -77,44 +75,48 @@
   }
 }
 
-// Override third party CSS  
-:global(.orgNodeChildGroup)  
-{  
-  margin: 2px;
-}  
+// Override third party CSS
+:global {
+  .orgNodeChildGroup .node {
+    border: solid 1px #c8c8c8;
+    display: inline-block;
+    padding: 4px;
+    width: 100px;
+  }
 
-:global(.orgNodeChildGroup .nodeCell) {
+  .orgNodeChildGroup .nodeCell {
     text-align: center;
   }
 
-  :global(.orgNodeChildGroup .nodeGroupCell) {
+  .orgNodeChildGroup .nodeGroupCell {
     vertical-align: top;
   }
 
-  :global(.orgNodeChildGroup .nodeGroupLineVerticalMiddle) {
+  .orgNodeChildGroup .nodeGroupLineVerticalMiddle {
     height: 25px;
     width: 50%;
     border-right: 2px solid #c8c8c8;
   }
 
-  :global(.nodeLineBorderTop) {
+  .nodeLineBorderTop {
     border-top: solid 2px #c8c8c8;
   }
 
-  :global(table) {
+  table {
     border-collapse: collapse;
     border: none;
     margin: 0 auto;
   }
 
-  :global(td) {
+  td {
     padding: 0;
   }
 
-  :global(table .nodeLineTable) {
+  table.nodeLineTable {
     width: 100%;
   }
 
-  :global(table td .nodeCell) {
+  table td.nodeCell {
     width: 50%;
   }
+}

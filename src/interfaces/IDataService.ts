@@ -1,11 +1,14 @@
-import { IPerson } from './IPerson';
+import { IGraphUserdata } from "./IGraphUserdata";
 import { IList } from "./IList";
+import { IPerson } from './IPerson';
 import { IPersonListItem } from "./IPersonListItem";
 
-import { WebPartContext } from "@microsoft/sp-webpart-base";
 
 export interface IDataService {
-    getDirectReportsForUser(list:string, user: string): Promise<IPerson>;
+    getDirectReportsForUser(list: string, user: string): Promise<IPerson>;
+    getDirectReportsForUserFromGraphAPI(email: string): Promise<IGraphUserdata>;
+    getUserPhotoFromGraphApi(userEmail: string);
+    getUserInfoFromGraphApi(userEmail: string);
     getOrgList(): Promise<IList[]>;
     getUsersFromList(listid: string): Promise<IPersonListItem[]>;
     checkIfListAlreadyExists(listName: string): Promise<boolean>;

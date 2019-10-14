@@ -1,22 +1,21 @@
-import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
+import { MSGraphClient, SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import pnp, { ContentTypeAddResult, List, ListAddResult, ProcessHttpClientResponseException } from "@pnp/pnpjs";
 import ErrorHandler from '../helpers/ErrorHandler';
 import { IDataService } from '../interfaces/IDataService';
+import { IGraphUserdata } from "../interfaces/IGraphUserdata";
 import { IList } from "../interfaces/IList";
 import { IPerson } from '../interfaces/IPerson';
 import { IPersonListItem } from "../interfaces/IPersonListItem";
 import { SPContentType } from '../interfaces/SPContentType';
-import { SPListData } from '../interfaces/SPListData';
+import { SPListData } from "../interfaces/SPListData";
 import { Person } from '../models/person';
 
 export default class DataService implements IDataService {
-  constructor(protected context: WebPartContext) {
+  constructor(protected context: WebPartContext) { }
 
-  }
   //#region public methods
   public checkIfListAlreadyExists(listName: string): Promise<boolean> {
-    let name = listName;
     return pnp.sp.web.lists.getByTitle(listName).get().then((listResult: List) => {
       if (listResult) {
         return Promise.resolve(true);
@@ -35,12 +34,11 @@ export default class DataService implements IDataService {
     return pnp.sp.web.lists.add(listName, "List to configure the org chart webpart", 100, true).then((orgListAddResult: ListAddResult) => {
       return this.configureOrgList((orgListAddResult)).then(() => {
         return pnp.sp.web.lists.getById(orgListAddResult.data.Id).views.get().then((views: any[]) => {
-          let defaultView: any = views.filter((v)=> {return v.DefaultView === true;}).shift();
-          return Promise.resolve(<IList>{ Id: orgListAddResult.data.Id, Title: orgListAddResult.data.Title, ParentWebUrl: orgListAddResult.data.ParentWebUrl, NavUrl:defaultView.ServerRelativeUrl });
+          let defaultView: any = views.filter((v) => { return v.DefaultView === true; }).shift();
+          return Promise.resolve(<IList>{ Id: orgListAddResult.data.Id, Title: orgListAddResult.data.Title, ParentWebUrl: orgListAddResult.data.ParentWebUrl, NavUrl: defaultView.ServerRelativeUrl });
         });
       });
     }).catch(ErrorHandler.handleError);
-
   }
 
   public getUsersFromList(listid: string): Promise<IPersonListItem[]> {
@@ -59,14 +57,11 @@ export default class DataService implements IDataService {
       SPHttpClient.configurations.v1)
       .then((response: SPHttpClientResponse) => response.json())
       .then((jsonData: { value: IList[] }) => {
-        //return jsonData.value;
         return this.filterOrgChartContentTypesFromLists(jsonData.value);
       }).catch(ErrorHandler.handleError);
   }
 
   public getDirectReportsForUser(listid: string, userid: string): Promise<IPerson> {
-    let person: Person;
-
     return this.getUsersFromList(listid).then((users: IPersonListItem[]) => {
       let filteredArray: Person[] = users.filter((u: IPersonListItem) => { return u.Id === userid; }).map(
         (filteredUser: IPersonListItem) => {
@@ -81,6 +76,38 @@ export default class DataService implements IDataService {
         return ErrorHandler.handleError("error getting direct reports for user");
       }
     }).catch(ErrorHandler.handleError);
+  }
+
+  public getDirectReportsForUserFromGraphAPI(userEmail: string): Promise<IGraphUserdata> {
+    return this.context.msGraphClientFactory.getClient()
+      .then((client: MSGraphClient) => {
+        return client
+          .api(`users/${userEmail}/directReports`)
+          .version("v1.0")
+          .get()
+          .catch(ErrorHandler.handleError);
+      });
+  }
+
+  public getUserPhotoFromGraphApi(userEmail: string) {
+    return this.context.msGraphClientFactory.getClient()
+      .then((client: MSGraphClient) => {
+        return client
+          .api(`users/${userEmail}/photo/$value`)
+          .version('v1.0')
+          .responseType('blob')
+          .get();
+      });
+  }
+
+  public getUserInfoFromGraphApi(userEmail: string) {
+    return this.context.msGraphClientFactory.getClient()
+      .then((client: MSGraphClient) => {
+        return client
+          .api(`users/${userEmail}`)
+          .version('beta')
+          .get();
+      });
   }
   //#endregion
 
@@ -107,7 +134,7 @@ export default class DataService implements IDataService {
       spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_Description"),
       spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_Picture"),
       spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_MyReportees"),
-      spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_MyReportees_ID")
+      spList.views.getByTitle("All Items").fields.inBatch(batch).add("ORG_MyReportees_ID");
 
     return batch.execute().then(() => {
       return Promise.resolve();
