@@ -3,7 +3,7 @@
   "solution": {
     "name": "org-chart",
     "id": "9bf2b53d-2cb4-46c2-99cc-f62d6462a80d",
-    "version": "1.0.0.11",
+    "version": "1.0.1.0",
     "isDomainIsolated": false,
     "includeClientSideAssets": true,
     "skipFeatureDeployment": false,

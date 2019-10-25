@@ -119,7 +119,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
           this._userDropDownOptions = persons.map((user: IPersonListItem) => { return { key: user.Id, text: user.Title }; });
         } else if (this.properties.selectedList) {
           this._userDropDownOptions = [];
-          this._setErrorProps({ statusText: "No users configured in the selected Config List." })
+          this._setErrorProps({ statusText: "No users configured in the selected Config List." });
         }
         this.loadingIndicator = false;
         this.context.propertyPane.refresh();
@@ -142,7 +142,7 @@ export default class OrgChartWebPart extends BaseClientSideWebPart<IOrgChartWebP
           }
           else {
             this._userDropDownOptions = [];
-            this._setErrorProps({ statusText: "No users configured in the selected Config List." })
+            this._setErrorProps({ statusText: "No users configured in the selected Config List." });
           }
           this.loadingIndicator = false;
           this.context.propertyPane.refresh();
