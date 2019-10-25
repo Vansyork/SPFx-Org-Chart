@@ -2,6 +2,12 @@
 
 SharePoint Framework (SPFx) webpart to display organization hierarchy.
 
+**Big tiles**
+![SPFx-org-chart-big-tiles](https://github.com/Vansyork/SPFx-Org-Chart/blob/master/Aantekening%202019-10-25%20144725.png?raw=true)
+
+**Small tiles**
+![SPFx-org-chart-small-tiles](https://github.com/Vansyork/SPFx-Org-Chart/blob/master/Aantekening%202019-10-25%20145206.png?raw=true)
+
 ### Building the code
 
   
@@ -50,6 +56,9 @@ gulp package-solution --ship
    items to the list to start building your organizational chart.
  - Start with adding a few items before setting the **My Reportees** field.
  
+ **Config list**
+ ![SPFx-org-chart-big-tiles](https://github.com/Vansyork/SPFx-Org-Chart/blob/master/Aantekening%202019-10-25%20141134.png?raw=true)
+
  #### Webpart Property Pane configurations
  
 |Setting |Description  |
@@ -61,6 +70,5 @@ gulp package-solution --ship
 |Use small tiles|Use only pictures/persona to display the nodes|
 |Create Configuration List button|Will display a dialog to create a new Configuration list |
 
-
- 
- 
+**Webpart properties**
+![SPFx-org-chart-big-tiles](https://github.com/Vansyork/SPFx-Org-Chart/blob/master/Aantekening%202019-10-25%20145442.png?raw=true)
