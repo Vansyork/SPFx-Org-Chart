@@ -21,7 +21,7 @@
     "@pnp/pnpjs": "^1.0.4",
     "@pnp/spfx-controls-react": "1.2.5",
     "@pnp/spfx-property-controls": "1.16.0",
-    "npm": "^6.14.6",
+    "npm": "^9.6.6",
     "office-ui-fabric-react": "6.214.0",
     "react": "16.8.5",
     "react-dom": "16.8.5",
